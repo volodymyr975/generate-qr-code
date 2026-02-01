@@ -34,6 +34,32 @@
         backdrop-filter: blur(10px);
         border-radius: 20px;
       }
+      .accordion-wrapper {
+        border: 1px solid #ccc;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .accordion-header {
+        padding: 10px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.5s ease;
+        padding: 0 10px;
+      }
+
+      .accordion-content.show {
+        max-height: 250px; /* підлаштуй під свій контент */
+        padding: 10px;
+      }
+
       .panel {
         background: rgba(0, 0, 0, 0.35);
         border-radius: 16px;
@@ -102,6 +128,15 @@
         opacity: 0.8;
         text-align: right;
       }
+      #gradientBox {
+        flex-direction: column;
+      }
+      #cornerGradientBox {
+        flex-direction: column;
+      }
+      #cornerDotGradientBox {
+        flex-direction: column;
+      }
       @media (max-width: 500px) {
         .app {
           max-width: 500px;
@@ -149,53 +184,183 @@
         <label>Колір фону:</label>
         <input type="color" id="bgColor" value="#ffffff" />
 
-        <div class="row">
-          <div>
-            <label>Стиль точок:</label>
-            <select id="dotStyle">
-              <option value="square">Квадрат</option>
-              <option value="dots">Крапки</option>
-              <option value="rounded">Заокруглені</option>
-              <option value="extra-rounded">Більш заокруглені</option>
-              <option value="classy-rounded">Класичні заокруглені</option>
-              <option value="classy">Елегантні</option>
-            </select>
+        <div class="accordion-wrapper">
+          <div class="accordion-header">
+            <span>Налаштування точок QR</span>
           </div>
-          <div>
-            <label>Колір точок:</label>
-            <input type="color" id="dotColor" value="#000000" />
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>Стиль кутів:</label>
-            <select id="cornerStyle">
-              <option value="square">Квадрат</option>
-              <option value="dot">Коло</option>
-              <option value="extra-rounded">Менш заокруглені</option>
-            </select>
-          </div>
-          <div>
-            <label>Колір кутів:</label>
-            <input type="color" id="squareCornerColor" value="#000000" />
+
+          <div class="accordion-content">
+            <div class="row">
+              <div>
+                <label>Стиль точок:</label>
+                <select id="dotStyle">
+                  <option value="square">Квадрат</option>
+                  <option value="dots">Крапки</option>
+                  <option value="rounded">Заокруглені</option>
+                  <option value="extra-rounded">Більш заокруглені</option>
+                  <option value="classy-rounded">Класичні заокруглені</option>
+                  <option value="classy">Елегантні</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Тип кольору:</label>
+                <select id="dotColorType">
+                  <option value="solid">Колір</option>
+                  <option value="gradient">Градієнт</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="solidColorBox">
+              <label>Колір точок:</label>
+              <input type="color" id="dotColor" value="#000000" />
+            </div>
+
+            <div id="gradientBox" class="row" style="display: none">
+              <div>
+                <label>Тип градієнта:</label>
+                <select id="gradientTypeDot">
+                  <option value="linear">Лінійний</option>
+                  <option value="radial">Радіальний</option>
+                </select>
+              </div>
+              <div style="display: flex; gap: 10px">
+                <input type="color" id="gradColor1Dot" value="#000000" />
+                <input type="color" id="gradColor2Dot" value="#ff0000" />
+              </div>
+              <div>
+                <label>Поворот градієнта</label>
+                <input
+                  type="range"
+                  id="rotateDot"
+                  min="1"
+                  max="360"
+                  value="1"
+                />
+                <div class="value"><span id="rotateDotVal">1</span></div>
+              </div>
+            </div>
           </div>
         </div>
 
-<div class="row">
-        <div>
-          <label>Стиль кутових кутів:</label>
-
-          <select id="cornersDotStyle">
-            <option value="">Немає</option>
-            <option value="square">Квадрат</option>
-            <option value="dot">Коло</option>
-          </select>
-        </div>
- <div>
-            <label>Колір кутових кутів:</label>
-            <input type="color" id="cornerDotColor" value="#000000" />
+        <div class="accordion-wrapper">
+          <div class="accordion-header">
+            <span>Налаштування кутів QR</span>
           </div>
-</div>
+
+          <div class="accordion-content">
+            <div class="row">
+              <div>
+                <label>Стиль кутів:</label>
+                <select id="cornerStyle">
+                  <option value="square">Квадрат</option>
+                  <option value="dot">Коло</option>
+                  <option value="extra-rounded">Менш заокруглені</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Тип кольору:</label>
+                <select id="cornerColorType">
+                  <option value="solid">Колір</option>
+                  <option value="gradient">Градієнт</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="cornerColorBox">
+              <label>Колір кутів:</label>
+              <input type="color" id="squareCornerColor" value="#000000" />
+            </div>
+
+            <div id="cornerGradientBox" class="row" style="display: none">
+              <div>
+                <label>Тип градієнта:</label>
+                <select id="gradientTypeCorner">
+                  <option value="linear">Лінійний</option>
+                  <option value="radial">Радіальний</option>
+                </select>
+              </div>
+
+              <div style="display: flex; gap: 10px">
+                <input type="color" id="gradColor1Corner" value="#000000" />
+                <input type="color" id="gradColor2Corner" value="#ff0000" />
+              </div>
+              <div>
+                <label>Поворот градієнта</label>
+                <input
+                  type="range"
+                  id="rotateCorner"
+                  min="1"
+                  max="360"
+                  value="1"
+                />
+                <div class="value"><span id="rotateCornerVal">1</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-wrapper">
+          <div class="accordion-header">
+            <span>Налаштування кутових кутів QR</span>
+          </div>
+
+          <div class="accordion-content">
+            <div class="row">
+              <div>
+                <label>Стиль кутових кутів:</label>
+
+                <select id="cornersDotStyle">
+                  <option value="">Немає</option>
+                  <option value="square">Квадрат</option>
+                  <option value="dot">Коло</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Тип кольору:</label>
+                <select id="cornerDotColorType">
+                  <option value="solid">Колір</option>
+                  <option value="gradient">Градієнт</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="cornerDotColorBox">
+              <label>Колір кутових кутів:</label>
+              <input type="color" id="cornerDotColor" value="#000000" />
+            </div>
+
+            <div id="cornerDotGradientBox" class="row" style="display: none">
+              <div>
+                <label>Тип градієнта:</label>
+                <select id="gradientTypeCornerDot">
+                  <option value="linear">Лінійний</option>
+                  <option value="radial">Радіальний</option>
+                </select>
+              </div>
+
+              <div style="display: flex; gap: 10px">
+                <input type="color" id="gradColor1CornerDot" value="#000000" />
+                <input type="color" id="gradColor2CornerDot" value="#ff0000" />
+              </div>
+              <div>
+                <label>Поворот градієнта</label>
+                <input
+                  type="range"
+                  id="rotateCornerDot"
+                  min="1"
+                  max="360"
+                  value="1"
+                />
+                <div class="value"><span id="rotateCornerDotVal">1</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <label>Логотип:</label>
         <input type="file" id="logo" />
         <label>Розмір логотипу (%):</label>
@@ -219,6 +384,60 @@
     </div>
 
     <script>
+      document.querySelectorAll(".accordion-wrapper").forEach((wrapper) => {
+        const header = wrapper.querySelector(".accordion-header");
+        const content = wrapper.querySelector(".accordion-content");
+
+        header.addEventListener("click", () => {
+          content.classList.toggle("show");
+        });
+      });
+      const dotColorType = document.getElementById("dotColorType");
+      const cornerColorType = document.getElementById("cornerColorType");
+      const cornerDotColorType = document.getElementById("cornerDotColorType");
+
+      const solidColorBox = document.getElementById("solidColorBox");
+      const cornerColorBox = document.getElementById("cornerColorBox");
+      const cornerDotColorBox = document.getElementById("cornerDotColorBox");
+
+      const gradientBox = document.getElementById("gradientBox");
+      const cornerGradientBox = document.getElementById("cornerGradientBox");
+      const cornerDotGradientBox = document.getElementById(
+        "cornerDotGradientBox",
+      );
+
+      dotColorType.addEventListener("change", () => {
+        if (dotColorType.value === "gradient") {
+          solidColorBox.style.display = "none";
+          gradientBox.style.display = "flex";
+        } else {
+          solidColorBox.style.display = "block";
+          gradientBox.style.display = "none";
+        }
+        updateQR();
+      });
+
+      cornerColorType.addEventListener("change", () => {
+        if (cornerColorType.value === "gradient") {
+          cornerColorBox.style.display = "none";
+          cornerGradientBox.style.display = "flex";
+        } else {
+          cornerColorBox.style.display = "block";
+          cornerGradientBox.style.display = "none";
+        }
+        updateQR();
+      });
+      cornerDotColorType.addEventListener("change", () => {
+        if (cornerDotColorType.value === "gradient") {
+          cornerDotColorBox.style.display = "none";
+          cornerDotGradientBox.style.display = "flex";
+        } else {
+          cornerDotColorBox.style.display = "block";
+          cornerDotGradientBox.style.display = "none";
+        }
+        updateQR();
+      });
+
       // --- Змінні ---
       const qrBox = document.getElementById("qrBox");
       const qrRadius = document.getElementById("qrRadius");
@@ -302,15 +521,84 @@
         return binary;
       }
 
+      function buildQRStylingOptions() {
+        // --- Dots ---
+        let dotsOptions = { type: dotStyle.value };
+        if (dotColorType.value === "solid") {
+          dotsOptions.color = dotColor.value;
+          dotsOptions.gradient = null;
+        } else {
+          dotsOptions.color = null;
+          dotsOptions.gradient = {
+            type: gradientTypeDot.value,
+            rotation:
+              gradientTypeDot.value === "linear"
+                ? (parseInt(rotateDot.value) * Math.PI) / 180
+                : undefined,
+            colorStops: [
+              { offset: 0, color: gradColor1Dot.value },
+              { offset: 1, color: gradColor2Dot.value },
+            ],
+          };
+        }
+
+        // --- Corner Squares ---
+        let cornerSquareOptions = { type: cornerStyle.value };
+        if (cornerColorType.value === "solid") {
+          cornerSquareOptions.color = squareCornerColor.value;
+          cornerSquareOptions.gradient = null;
+        } else {
+          cornerSquareOptions.color = null;
+          cornerSquareOptions.gradient = {
+            type: gradientTypeCorner.value,
+            rotation:
+              gradientTypeCorner.value === "linear"
+                ? (parseInt(rotateCorner.value) * Math.PI) / 180
+                : undefined,
+            colorStops: [
+              { offset: 0, color: gradColor1Corner.value },
+              { offset: 1, color: gradColor2Corner.value },
+            ],
+          };
+        }
+
+        // --- Corner Dots ---
+        let cornersDotOptions = { type: cornersDotStyle.value };
+        if (cornerDotColorType.value === "solid") {
+          cornersDotOptions.color = cornerDotColor.value;
+          cornersDotOptions.gradient = null;
+        } else {
+          cornersDotOptions.color = null;
+          cornersDotOptions.gradient = {
+            type: gradientTypeCornerDot.value,
+            rotation:
+              gradientTypeCornerDot.value === "linear"
+                ? (parseInt(rotateCornerDot.value) * Math.PI) / 180
+                : undefined,
+            colorStops: [
+              { offset: 0, color: gradColor1CornerDot.value },
+              { offset: 1, color: gradColor2CornerDot.value },
+            ],
+          };
+        }
+
+        return { dotsOptions, cornerSquareOptions, cornersDotOptions };
+      }
+
       // --- Генерація QR ---
       function generateQR() {
         logoVal.textContent = logoScale.value;
         marginVal.textContent = margin.value;
+        rotateDotVal.textContent = rotateDot.value;
+        rotateCornerVal.textContent = rotateCorner.value;
+        rotateCornerDotVal.textContent = rotateCornerDot.value;
 
         let canvasSize = qrBox.clientWidth;
 
         const marginPx = (parseFloat(margin.value) / 100) * canvasSize;
         const imageSize = parseFloat(logoScale.value) / 100;
+        const { dotsOptions, cornerSquareOptions, cornersDotOptions } =
+          buildQRStylingOptions();
 
         const updateQR = (logoData = null) => {
           qrPreview.update({
@@ -318,22 +606,14 @@
             height: canvasSize,
 
             data: encodeUTF8(buildData()),
-            dotsOptions: {
-              color: dotColor.value,
-              type: dotStyle.value,
-              scale: 1,
-            },
-            cornersSquareOptions: {
-              type: cornerStyle.value,
-              color: squareCornerColor.value,
-            },
-            cornersDotOptions: { type: cornersDotStyle.value, color: cornerDotColor.value},
+            dotsOptions: dotsOptions,
+            cornersSquareOptions: cornerSquareOptions,
+            cornersDotOptions: cornersDotOptions,
             backgroundOptions: { color: bgColor.value },
             image: logoData,
             imageOptions: {
               crossOrigin: "anonymous",
-              margin: 0,
-              padding: 0,
+
               imageSize,
             },
             margin: marginPx,
@@ -359,13 +639,17 @@
         const marginPx = (exportSize * parseInt(margin.value)) / 100;
         const radiusPx = (exportSize * parseInt(qrRadius.value)) / 100;
 
+        const { dotsOptions, cornerSquareOptions, cornersDotOptions } =
+          buildQRStylingOptions();
+
         const qrExport = new QRCodeStyling({
           width: exportSize,
           height: exportSize,
           data: buildData(),
-          dotsOptions: { color: dotColor.value, type: dotStyle.value },
-          cornersSquareOptions: { type: cornerStyle.value },
-          backgroundOptions: { color: "transparent" },
+          dotsOptions: dotsOptions,
+          cornersSquareOptions: cornerSquareOptions,
+          cornersDotOptions: cornersDotOptions,
+          backgroundOptions: { color: bgColor.value },
           imageOptions: { crossOrigin: "anonymous", imageSize },
           margin: marginPx,
           qrOptions: { typeNumber: 0, errorCorrectionLevel: "Q", mode: "Byte" },
@@ -421,22 +705,43 @@
       // --- Події ---
       [
         "type",
-        "dotColor",
-        "dotStyle",
+        "margin",
         "bgColor",
-        
         "logo",
         "logoScale",
-        "margin",
-        
-        "cornersDotStyle",
+
+        "dotColor",
+        "gradientTypeDot",
+        "gradColor1Dot",
+        "gradColor2Dot",
+
         "cornerDotColor",
+        "gradientTypeCornerDot",
+        "gradColor1CornerDot",
+        "gradColor2CornerDot",
 
-        "cornerStyle",
         "squareCornerColor",
-
+        "gradientTypeCorner",
+        "gradColor1Corner",
+        "gradColor2Corner",
       ].forEach((id) => {
         document.getElementById(id).addEventListener("input", generateQR);
+        document.getElementById(id).addEventListener("change", generateQR);
+      });
+      // --- Події ---
+      [
+        "rotateDot",
+        "dotStyle",
+        "dotColorType",
+
+        "rotateCorner",
+        "cornerStyle",
+        "cornerColorType",
+
+        "rotateCornerDot",
+        "cornersDotStyle",
+        "cornerDotColorType",
+      ].forEach((id) => {
         document.getElementById(id).addEventListener("change", generateQR);
       });
 
