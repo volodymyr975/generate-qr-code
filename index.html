@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      }
+      .app {
+        max-width: 1100px;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+      }
+      .panel {
+        background: rgba(0, 0, 0, 0.35);
+        border-radius: 16px;
+        padding: 16px;
+        max-width: 500px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .panel.qr-panel {
+        background: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      #qrBox {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #fff;
+        margin: 0;
+        max-width: 500px;
+        width: calc(100% - 100px);
+        overflow: hidden;
+        border-radius: 0px;
+      }
+
+      h2 {
+        margin-top: 0;
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 8px;
+        border-radius: 8px;
+        border: none;
+        margin-top: 4px;
+      }
+      input[type="range"] {
+        padding: 0;
+      }
+      button {
+        margin-top: 12px;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        border-radius: 10px;
+        background: #00ff99;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .value {
+        font-size: 12px;
+        opacity: 0.8;
+        text-align: right;
+      }
+      @media (max-width: 500px) {
+        .app {
+          max-width: 500px;
+        }
+        .panel {
+          max-width: 400px;
+        }
+        #qrBox {
+          max-width: 500px;
+          margin: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="panel">
+        <h2>Налаштування QR</h2>
+
+        <label>Тип QR:</label>
+        <select id="type">
+          <option value="url">Посилання</option>
+          <option value="text">Текст</option>
+          <option value="wifi">WiFi</option>
+          <option value="phone">Телефон</option>
+        </select>
+
+        <div id="inputs">
+          <label>Посилання:</label>
+          <input id="data" value="https://google.com" />
+        </div>
+
+        <label>Падінг (px):</label>
+        <input type="range" id="margin" min="0" max="39" step="3" value="0" />
+        <div class="value"><span id="marginVal">0</span> px</div>
+
+        <label>Радіус QR (%):</label>
+        <input type="range" id="qrRadius" min="0" max="50" value="0" />
+        <div class="value"><span id="radiusVal">0</span>%</div>
+
+        <label>Розмір файлу (px):</label>
+        <input type="range" id="size" min="200" max="1200" value="600" />
+        <div class="value"><span id="sizeVal">600</span> px</div>
+
+        <label>Колір фону:</label>
+        <input type="color" id="bgColor" value="#ffffff" />
+
+        <div class="row">
+          <div>
+            <label>Стиль точок:</label>
+            <select id="dotStyle">
+              <option value="square">Квадрат</option>
+              <option value="dots">Крапки</option>
+              <option value="rounded">Заокруглені</option>
+              <option value="extra-rounded">Більш заокруглені</option>
+              <option value="classy-rounded">Класичні заокруглені</option>
+              <option value="classy">Елегантні</option>
+            </select>
+          </div>
+          <div>
+            <label>Колір точок:</label>
+            <input type="color" id="dotColor" value="#000000" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Стиль кутів:</label>
+            <select id="cornerStyle">
+              <option value="square">Квадрат</option>
+              <option value="dot">Коло</option>
+              <option value="extra-rounded">Менш заокруглені</option>
+            </select>
+          </div>
+          <div>
+            <label>Колір кутів:</label>
+            <input type="color" id="squareCornerColor" value="#000000" />
+          </div>
+        </div>
+
+<div class="row">
+        <div>
+          <label>Стиль кутових кутів:</label>
+
+          <select id="cornersDotStyle">
+            <option value="">Немає</option>
+            <option value="square">Квадрат</option>
+            <option value="dot">Коло</option>
+          </select>
+        </div>
+ <div>
+            <label>Колір кутових кутів:</label>
+            <input type="color" id="cornerDotColor" value="#000000" />
+          </div>
+</div>
+        <label>Логотип:</label>
+        <input type="file" id="logo" />
+        <label>Розмір логотипу (%):</label>
+        <input
+          type="range"
+          id="logoScale"
+          min="20"
+          max="80"
+          value="40"
+          step="20"
+        />
+        <div class="value"><span id="logoVal">20</span>%</div>
+
+        <button onclick="downloadQR()">Завантажити PNG</button>
+      </div>
+
+      <div class="panel qr-panel">
+        <h2>Попередній вигляд</h2>
+        <div id="qrBox"></div>
+      </div>
+    </div>
+
+    <script>
+      // --- Змінні ---
+      const qrBox = document.getElementById("qrBox");
+      const qrRadius = document.getElementById("qrRadius");
+      const radiusVal = document.getElementById("radiusVal");
+
+      let qrPreview = new QRCodeStyling({
+        width: qrBox.clientWidth,
+        height: qrBox.clientWidth,
+        typeNumber: 10,
+        errorCorrectionLevel: "Q",
+        data: "https://google.com",
+        dotsOptions: { color: "#000", type: "square", scale: 1 },
+        cornersSquareOptions: { type: "square" },
+        backgroundOptions: { color: "#fff" },
+        imageOptions: { crossOrigin: "anonymous", margin: 0, padding: 0 },
+        margin: 0,
+        padding: 0,
+      });
+
+      qrPreview.append(qrBox);
+
+      // --- Тип QR ---
+      function updateType() {
+        const t = type.value;
+        const box = document.getElementById("inputs");
+        if (t === "wifi") {
+          box.innerHTML = `
+          <label>SSID:</label><input id="ssid">
+          <label>Пароль:</label><input id="pass">
+          <label>Тип:</label>
+          <select id="enc"><option>WPA</option><option>WEP</option><option>nopass</option></select>`;
+        } else if (t === "phone") {
+          box.innerHTML = `<label>Телефон:</label><input id="phone">`;
+        } else if (t === "text") {
+          box.innerHTML = `<label>Текст:</label><input id="text">`;
+        } else {
+          box.innerHTML = `<label>Посилання:</label><input id="data" value="https://google.com">`;
+        }
+
+        box.querySelectorAll("input,select").forEach((el) => {
+          el.addEventListener("input", generateQR);
+          el.addEventListener("change", generateQR);
+        });
+
+        generateQR();
+      }
+
+      function buildData() {
+        const t = type.value;
+        let textValue = "";
+
+        if (t === "wifi") {
+          const ssidInput = document.getElementById("ssid");
+          const passInput = document.getElementById("pass");
+          const encInput = document.getElementById("enc");
+          const ssid = ssidInput ? ssidInput.value : "";
+          const pass = passInput ? passInput.value : "";
+          const enc = encInput ? encInput.value : "WPA"; // дефолт
+          textValue = `WIFI:T:${enc};S:${ssid};P:${pass};;`;
+        } else if (t === "phone") {
+          const phoneInput = document.getElementById("phone");
+          textValue = phoneInput ? phoneInput.value : "";
+        } else if (t === "text") {
+          const textInput = document.getElementById("text");
+          textValue = textInput ? textInput.value : "";
+        } else {
+          const dataInput = document.getElementById("data");
+          textValue = dataInput ? dataInput.value : "";
+        }
+
+        return textValue; // UTF-8 обробляється автоматично
+      }
+
+      function encodeUTF8(str) {
+        const encoder = new TextEncoder(); // UTF-8
+        const bytes = encoder.encode(str);
+        let binary = "";
+        for (let i = 0; i < bytes.length; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return binary;
+      }
+
+      // --- Генерація QR ---
+      function generateQR() {
+        logoVal.textContent = logoScale.value;
+        marginVal.textContent = margin.value;
+
+        let canvasSize = qrBox.clientWidth;
+
+        const marginPx = (parseFloat(margin.value) / 100) * canvasSize;
+        const imageSize = parseFloat(logoScale.value) / 100;
+
+        const updateQR = (logoData = null) => {
+          qrPreview.update({
+            width: canvasSize,
+            height: canvasSize,
+
+            data: encodeUTF8(buildData()),
+            dotsOptions: {
+              color: dotColor.value,
+              type: dotStyle.value,
+              scale: 1,
+            },
+            cornersSquareOptions: {
+              type: cornerStyle.value,
+              color: squareCornerColor.value,
+            },
+            cornersDotOptions: { type: cornersDotStyle.value, color: cornerDotColor.value},
+            backgroundOptions: { color: bgColor.value },
+            image: logoData,
+            imageOptions: {
+              crossOrigin: "anonymous",
+              margin: 0,
+              padding: 0,
+              imageSize,
+            },
+            margin: marginPx,
+            qrOptions: {
+              typeNumber: "0",
+            },
+          });
+        };
+
+        if (logo.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (e) => updateQR(e.target.result);
+          reader.readAsDataURL(logo.files[0]);
+        } else {
+          updateQR();
+        }
+      }
+
+      // --- Завантаження QR з border-radius ---
+      function downloadQR() {
+        const exportSize = parseInt(size.value);
+        const imageSize = parseFloat(logoScale.value) / 100;
+        const marginPx = (exportSize * parseInt(margin.value)) / 100;
+        const radiusPx = (exportSize * parseInt(qrRadius.value)) / 100;
+
+        const qrExport = new QRCodeStyling({
+          width: exportSize,
+          height: exportSize,
+          data: buildData(),
+          dotsOptions: { color: dotColor.value, type: dotStyle.value },
+          cornersSquareOptions: { type: cornerStyle.value },
+          backgroundOptions: { color: "transparent" },
+          imageOptions: { crossOrigin: "anonymous", imageSize },
+          margin: marginPx,
+          qrOptions: { typeNumber: 0, errorCorrectionLevel: "Q", mode: "Byte" },
+        });
+
+        const drawRoundedQR = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = canvas.height = exportSize;
+          const ctx = canvas.getContext("2d");
+
+          ctx.fillStyle = bgColor.value;
+          ctx.beginPath();
+          ctx.moveTo(radiusPx, 0);
+          ctx.lineTo(exportSize - radiusPx, 0);
+          ctx.quadraticCurveTo(exportSize, 0, exportSize, radiusPx);
+          ctx.lineTo(exportSize, exportSize - radiusPx);
+          ctx.quadraticCurveTo(
+            exportSize,
+            exportSize,
+            exportSize - radiusPx,
+            exportSize,
+          );
+          ctx.lineTo(radiusPx, exportSize);
+          ctx.quadraticCurveTo(0, exportSize, 0, exportSize - radiusPx);
+          ctx.lineTo(0, radiusPx);
+          ctx.quadraticCurveTo(0, 0, radiusPx, 0);
+          ctx.closePath();
+          ctx.fill();
+
+          const img = new Image();
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0, exportSize, exportSize);
+            const link = document.createElement("a");
+            link.download = "qr-rounded.png";
+            link.href = canvas.toDataURL();
+            link.click();
+          };
+          img.src = qrExport._canvas.toDataURL();
+        };
+
+        if (logo.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            qrExport.update({ image: e.target.result });
+            setTimeout(drawRoundedQR, 100);
+          };
+          reader.readAsDataURL(logo.files[0]);
+        } else {
+          setTimeout(drawRoundedQR, 100);
+        }
+      }
+
+      // --- Події ---
+      [
+        "type",
+        "dotColor",
+        "dotStyle",
+        "bgColor",
+        
+        "logo",
+        "logoScale",
+        "margin",
+        
+        "cornersDotStyle",
+        "cornerDotColor",
+
+        "cornerStyle",
+        "squareCornerColor",
+
+      ].forEach((id) => {
+        document.getElementById(id).addEventListener("input", generateQR);
+        document.getElementById(id).addEventListener("change", generateQR);
+      });
+
+      type.addEventListener("change", updateType);
+
+      qrRadius.addEventListener("input", () => {
+        radiusVal.textContent = qrRadius.value;
+        qrBox.style.borderRadius =
+          (parseInt(qrRadius.value) / 100) * qrBox.clientWidth + "px";
+      });
+
+      size.addEventListener("input", () => {
+        sizeVal.textContent = size.value;
+      });
+
+      window.addEventListener("resize", () => {
+        qrPreview.update({
+          width: qrBox.clientWidth,
+          height: qrBox.clientWidth,
+        });
+        generateQR();
+      });
+
+      // --- Ініціалізація ---
+      updateType();
+    </script>
+  </body>
+</html>
