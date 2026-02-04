@@ -2,11 +2,32 @@
 <html lang="uk">
   <head>
     <meta charset="UTF-8" />
-
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>QR Generator</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="/favicon/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon/logo.svg" />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicon/apple-touch-icon.png"
+    />
+    <meta name="apple-mobile-web-app-title" content="QR Generator" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <title>QR Code Generator – text, links, Wi-Fi, phone numbers</title>
+    <meta
+      name="description"
+      content="Створюйте QR-коди швидко та легко: для тексту, посилань, Wi-Fi мереж і номерів телефону. Generate QR codes easily for text, links, Wi-Fi, and phone numbers."
+    />
+    <meta
+      name="keywords"
+      content="QR-код, генератор QR, створити QR, QR для тексту, QR для посилання, QR для Wi-Fi, QR для телефону, QR code, QR generator, create QR, QR for text, QR for link, QR for Wi-Fi, QR for phone"
+    />
     <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
     <style>
       * {
@@ -49,17 +70,24 @@
       }
 
       .accordion-content {
-        max-height: 0;
         overflow: hidden;
-        transition: max-height 0.5s ease;
+        max-height: 0;
+        opacity: 0;
         padding: 0 10px;
+        transition:
+          max-height 0.4s ease,
+          opacity 0.3s ease,
+          padding 0.5s ease;
       }
-
       .accordion-content.show {
-        max-height: 250px; /* підлаштуй під свій контент */
+        max-height: 500px; /* має бути більше ніж реальний контент */
+        opacity: 1;
+        transition:
+          max-height 0.4s ease,
+          opacity 0.3s ease,
+          padding 0.5s ease;
         padding: 10px;
       }
-
       .panel {
         background: rgba(0, 0, 0, 0.35);
         border-radius: 16px;
@@ -72,11 +100,63 @@
       .panel.qr-panel {
         background: none;
         padding: 0;
-        display: flex;
+       
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        
+        justify-content: space-around;
+        text-align: center;
+        
       }
+      .preview{
+        display: flex;
+       flex-direction: column;
+       align-items: center;
+      }
+.qr-text {
+  text-align: center;         
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #eee;                
+  margin-top: 10px;
+}
+
+.qr-text .title {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+}
+
+.qr-text .subtitle {
+  font-size: 14px;
+  margin: 2px 0 0 0;
+  color: #ccc;               
+}
+
+.qr-text .subtitle a {
+  color: #4da6ff;            
+  text-decoration: none;
+}
+
+.qr-text .subtitle a:hover {
+  text-decoration: underline;
+}
+
+/* Стиль для GitHub-посилання */
+.qr-text .github {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+}
+
+.qr-text .github a {
+  color: #ffcc00;             /* Яскраве посилання, щоб виділялося */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.qr-text .github a:hover {
+  text-decoration: underline;
+}
+
+
       #qrBox {
         display: flex;
         justify-content: center;
@@ -88,7 +168,6 @@
         overflow: hidden;
         border-radius: 0px;
       }
-
       h2 {
         margin-top: 0;
       }
@@ -154,75 +233,72 @@
   <body>
     <div class="app">
       <div class="panel">
-        <h2>Налаштування QR</h2>
-
-        <label>Тип QR:</label>
+        <h2>Settings QR</h2>
+        <label>Type QR:</label>
         <select id="type">
-          <option value="url">Посилання</option>
-          <option value="text">Текст</option>
+          <option value="url">Link</option>
+          <option value="text">Text</option>
           <option value="wifi">WiFi</option>
-          <option value="phone">Телефон</option>
+          <option value="phone">Phone</option>
         </select>
-
         <div id="inputs">
-          <label>Посилання:</label>
+          <label>Link:</label>
           <input id="data" value="https://google.com" />
         </div>
 
-        <label>Падінг (px):</label>
+        <label>Margin (px):</label>
         <input type="range" id="margin" min="0" max="39" step="3" value="0" />
         <div class="value"><span id="marginVal">0</span> px</div>
 
-        <label>Радіус QR (%):</label>
+        <label>Radius QR (%):</label>
         <input type="range" id="qrRadius" min="0" max="50" value="0" />
         <div class="value"><span id="radiusVal">0</span>%</div>
 
-        <label>Розмір файлу (px):</label>
+        <label>Image size (px):</label>
         <input type="range" id="size" min="200" max="1200" value="600" />
         <div class="value"><span id="sizeVal">600</span> px</div>
 
-        <label>Колір фону:</label>
+        <label>Background color:</label>
         <input type="color" id="bgColor" value="#ffffff" />
 
         <div class="accordion-wrapper">
           <div class="accordion-header">
-            <span>Налаштування точок QR</span>
+            <span>Dots Options</span>
           </div>
-
           <div class="accordion-content">
             <div class="row">
               <div>
-                <label>Стиль точок:</label>
+                <label>Dots Style:</label>
                 <select id="dotStyle">
-                  <option value="square">Квадрат</option>
-                  <option value="dots">Крапки</option>
-                  <option value="rounded">Заокруглені</option>
-                  <option value="extra-rounded">Більш заокруглені</option>
-                  <option value="classy-rounded">Класичні заокруглені</option>
-                  <option value="classy">Елегантні</option>
+                  <option value="square">Square</option>
+                  <option value="dots">Dots</option>
+                  <option value="rounded">Rounded</option>
+                  <option value="extra-rounded">Extra rounded</option>
+                  <option value="classy-rounded">Classy rounded</option>
+                  <option value="classy">Classy</option>
                 </select>
               </div>
 
               <div>
-                <label>Тип кольору:</label>
+                <label>Color Type:</label>
                 <select id="dotColorType">
-                  <option value="solid">Колір</option>
-                  <option value="gradient">Градієнт</option>
+                  <option value="solid">Single color</option>
+                  <option value="gradient">Color gradient</option>
                 </select>
               </div>
             </div>
 
             <div id="solidColorBox">
-              <label>Колір точок:</label>
+              <label>Dots Color:</label>
               <input type="color" id="dotColor" value="#000000" />
             </div>
 
             <div id="gradientBox" class="row" style="display: none">
               <div>
-                <label>Тип градієнта:</label>
+                <label>Gradient Type:</label>
                 <select id="gradientTypeDot">
-                  <option value="linear">Лінійний</option>
-                  <option value="radial">Радіальний</option>
+                  <option value="linear">Linear</option>
+                  <option value="radial">Radial</option>
                 </select>
               </div>
               <div style="display: flex; gap: 10px">
@@ -230,7 +306,7 @@
                 <input type="color" id="gradColor2Dot" value="#ff0000" />
               </div>
               <div>
-                <label>Поворот градієнта</label>
+                <label>Rotation</label>
                 <input
                   type="range"
                   id="rotateDot"
@@ -243,43 +319,43 @@
             </div>
           </div>
         </div>
-
         <div class="accordion-wrapper">
           <div class="accordion-header">
-            <span>Налаштування кутів QR</span>
+            <span>Corners Square Options</span>
           </div>
 
           <div class="accordion-content">
             <div class="row">
               <div>
-                <label>Стиль кутів:</label>
+                <label>Corners Square Style:</label>
                 <select id="cornerStyle">
-                  <option value="square">Квадрат</option>
-                  <option value="dot">Коло</option>
-                  <option value="extra-rounded">Менш заокруглені</option>
+                  <option value="">None</option>
+                  <option value="square">Square</option>
+                  <option value="dot">Dot</option>
+                  <option value="extra-rounded">Extra rounded</option>
                 </select>
               </div>
 
               <div>
-                <label>Тип кольору:</label>
+                <label>Color Type:</label>
                 <select id="cornerColorType">
-                  <option value="solid">Колір</option>
-                  <option value="gradient">Градієнт</option>
+                  <option value="solid">Single color</option>
+                  <option value="gradient">Color gradient</option>
                 </select>
               </div>
             </div>
 
             <div id="cornerColorBox">
-              <label>Колір кутів:</label>
+              <label>Corners Square Color:</label>
               <input type="color" id="squareCornerColor" value="#000000" />
             </div>
 
             <div id="cornerGradientBox" class="row" style="display: none">
               <div>
-                <label>Тип градієнта:</label>
+                <label>Gradient Type:</label>
                 <select id="gradientTypeCorner">
-                  <option value="linear">Лінійний</option>
-                  <option value="radial">Радіальний</option>
+                  <option value="linear">Linear</option>
+                  <option value="radial">Radial</option>
                 </select>
               </div>
 
@@ -288,7 +364,7 @@
                 <input type="color" id="gradColor2Corner" value="#ff0000" />
               </div>
               <div>
-                <label>Поворот градієнта</label>
+                <label>Rotation</label>
                 <input
                   type="range"
                   id="rotateCorner"
@@ -301,44 +377,43 @@
             </div>
           </div>
         </div>
-
         <div class="accordion-wrapper">
           <div class="accordion-header">
-            <span>Налаштування кутових кутів QR</span>
+            <span>Corners Dot Options</span>
           </div>
 
           <div class="accordion-content">
             <div class="row">
               <div>
-                <label>Стиль кутових кутів:</label>
+                <label>Corners Dot Style:</label>
 
                 <select id="cornersDotStyle">
-                  <option value="">Немає</option>
-                  <option value="square">Квадрат</option>
-                  <option value="dot">Коло</option>
+                  <option value="">None</option>
+                  <option value="square">Square</option>
+                  <option value="dot">Dot</option>
                 </select>
               </div>
 
               <div>
-                <label>Тип кольору:</label>
+                <label>Color Type:</label>
                 <select id="cornerDotColorType">
-                  <option value="solid">Колір</option>
-                  <option value="gradient">Градієнт</option>
+                  <option value="solid">Single color</option>
+                  <option value="gradient">Color gradient</option>
                 </select>
               </div>
             </div>
 
             <div id="cornerDotColorBox">
-              <label>Колір кутових кутів:</label>
+              <label>Corners Dot Color:</label>
               <input type="color" id="cornerDotColor" value="#000000" />
             </div>
 
             <div id="cornerDotGradientBox" class="row" style="display: none">
               <div>
-                <label>Тип градієнта:</label>
+                <label>Gradient Type:</label>
                 <select id="gradientTypeCornerDot">
-                  <option value="linear">Лінійний</option>
-                  <option value="radial">Радіальний</option>
+                  <option value="linear">Linear</option>
+                  <option value="radial">Radial</option>
                 </select>
               </div>
 
@@ -347,7 +422,7 @@
                 <input type="color" id="gradColor2CornerDot" value="#ff0000" />
               </div>
               <div>
-                <label>Поворот градієнта</label>
+                <label>Rotation</label>
                 <input
                   type="range"
                   id="rotateCornerDot"
@@ -361,9 +436,9 @@
           </div>
         </div>
 
-        <label>Логотип:</label>
+        <label>Logo:</label>
         <input type="file" id="logo" />
-        <label>Розмір логотипу (%):</label>
+        <label>Logo size (%):</label>
         <input
           type="range"
           id="logoScale"
@@ -373,13 +448,30 @@
           step="20"
         />
         <div class="value"><span id="logoVal">20</span>%</div>
-
-        <button onclick="downloadQR()">Завантажити PNG</button>
+        <button onclick="downloadQR()">Download PNG</button>
       </div>
-
       <div class="panel qr-panel">
-        <h2>Попередній вигляд</h2>
-        <div id="qrBox"></div>
+        <div class="preview">
+          <h2>Preview</h2>
+          <div id="qrBox"></div>
+        </div>
+<div class="qr-text">
+  <p class="title">Open Source Solution</p>
+  <p class="subtitle">
+    Created with the 
+    <a href="https://qr-code-styling.com/" target="_blank" rel="noopener noreferrer">QR Code Styling library</a>
+  </p>
+  <p class="github">
+    <a href="https://github.com/volodymyr975/" target="_blank" rel="noopener noreferrer">
+      View on my GitHub | volodymyr975
+    </a>
+  </p>
+</div>
+
+
+</div>
+
+        
       </div>
     </div>
 
@@ -416,7 +508,6 @@
         }
         updateQR();
       });
-
       cornerColorType.addEventListener("change", () => {
         if (cornerColorType.value === "gradient") {
           cornerColorBox.style.display = "none";
@@ -466,15 +557,15 @@
         if (t === "wifi") {
           box.innerHTML = `
           <label>SSID:</label><input id="ssid">
-          <label>Пароль:</label><input id="pass">
-          <label>Тип:</label>
+          <label>Password:</label><input id="pass">
+          <label>Type:</label>
           <select id="enc"><option>WPA</option><option>WEP</option><option>nopass</option></select>`;
         } else if (t === "phone") {
-          box.innerHTML = `<label>Телефон:</label><input id="phone">`;
+          box.innerHTML = `<label>Phone:</label><input id="phone">`;
         } else if (t === "text") {
-          box.innerHTML = `<label>Текст:</label><input id="text">`;
+          box.innerHTML = `<label>Text:</label><input id="text">`;
         } else {
-          box.innerHTML = `<label>Посилання:</label><input id="data" value="https://google.com">`;
+          box.innerHTML = `<label>Link:</label><input id="data" value="https://google.com">`;
         }
 
         box.querySelectorAll("input,select").forEach((el) => {
@@ -678,12 +769,13 @@
           ctx.quadraticCurveTo(0, 0, radiusPx, 0);
           ctx.closePath();
           ctx.fill();
+          ctx.clip();
 
           const img = new Image();
           img.onload = () => {
             ctx.drawImage(img, 0, 0, exportSize, exportSize);
             const link = document.createElement("a");
-            link.download = "qr-rounded.png";
+            link.download = "qr-code.png";
             link.href = canvas.toDataURL();
             link.click();
           };
