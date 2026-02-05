@@ -1,1 +1,865 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="/favicon/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon/logo.svg" />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/favicon/apple-touch-icon.png"
+    />
+    <meta name="apple-mobile-web-app-title" content="QR Generator" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <title>QR Code Generator – text, links, Wi-Fi, phone numbers</title>
+    <meta
+      name="description"
+      content="Створюйте QR-коди швидко та легко: для тексту, посилань, Wi-Fi мереж і номерів телефону. Generate QR codes easily for text, links, Wi-Fi, and phone numbers."
+    />
+    <meta
+      name="keywords"
+      content="QR-код, генератор QR, створити QR, QR для тексту, QR для посилання, QR для Wi-Fi, QR для телефону, QR code, QR generator, create QR, QR for text, QR for link, QR for Wi-Fi, QR for phone"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      }
+      .app {
+        max-width: 1100px;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+      }
+      .accordion-wrapper {
+        border: 1px solid #ccc;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .accordion-header {
+        padding: 10px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .accordion-content {
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        padding: 0 10px;
+        transition:
+          max-height 0.4s ease,
+          opacity 0.3s ease,
+          padding 0.5s ease;
+      }
+      .accordion-content.show {
+        max-height: 500px; /* має бути більше ніж реальний контент */
+        opacity: 1;
+        transition:
+          max-height 0.4s ease,
+          opacity 0.3s ease,
+          padding 0.5s ease;
+        padding: 10px;
+      }
+      .panel {
+        background: rgba(0, 0, 0, 0.35);
+        border-radius: 16px;
+        padding: 16px;
+        max-width: 500px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .panel.qr-panel {
+        background: none;
+        padding: 0;
+       
+        flex-direction: column;
+        
+        justify-content: space-around;
+        text-align: center;
+        
+      }
+      .preview{
+        display: flex;
+       flex-direction: column;
+       align-items: center;
+      }
+.qr-text {
+  text-align: center;         
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  color: #eee;                
+  margin-top: 10px;
+}
+
+.qr-text .title {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+}
+
+.qr-text .subtitle {
+  font-size: 14px;
+  margin: 2px 0 0 0;
+  color: #ccc;               
+}
+
+.qr-text .subtitle a {
+  color: #4da6ff;            
+  text-decoration: none;
+}
+
+.qr-text .subtitle a:hover {
+  text-decoration: underline;
+}
+
+/* Стиль для GitHub-посилання */
+.qr-text .github {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+}
+
+.qr-text .github a {
+  color: #ffcc00;             /* Яскраве посилання, щоб виділялося */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.qr-text .github a:hover {
+  text-decoration: underline;
+}
+
+
+      #qrBox {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #fff;
+        margin: 0;
+        max-width: 500px;
+        width: calc(100% - 100px);
+        overflow: hidden;
+        border-radius: 0px;
+      }
+      h2 {
+        margin-top: 0;
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 8px;
+        border-radius: 8px;
+        border: none;
+        margin-top: 4px;
+      }
+      input[type="range"] {
+        padding: 0;
+      }
+      button {
+        margin-top: 12px;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        border-radius: 10px;
+        background: #00ff99;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .value {
+        font-size: 12px;
+        opacity: 0.8;
+        text-align: right;
+      }
+      #gradientBox {
+        flex-direction: column;
+      }
+      #cornerGradientBox {
+        flex-direction: column;
+      }
+      #cornerDotGradientBox {
+        flex-direction: column;
+      }
+      @media (max-width: 500px) {
+        .app {
+          max-width: 500px;
+        }
+        .panel {
+          max-width: 400px;
+        }
+        #qrBox {
+          max-width: 500px;
+          margin: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="panel">
+        <h2>Settings QR</h2>
+        <label>Type QR:</label>
+        <select id="type">
+          <option value="url">Link</option>
+          <option value="text">Text</option>
+          <option value="wifi">WiFi</option>
+          <option value="phone">Phone</option>
+        </select>
+        <div id="inputs">
+          <label>Link:</label>
+          <input id="data" value="https://google.com" />
+        </div>
+
+        <label>Margin (px):</label>
+        <input type="range" id="margin" min="0" max="39" step="3" value="0" />
+        <div class="value"><span id="marginVal">0</span> px</div>
+
+        <label>Radius QR (%):</label>
+        <input type="range" id="qrRadius" min="0" max="50" value="0" />
+        <div class="value"><span id="radiusVal">0</span>%</div>
+
+        <label>Image size (px):</label>
+        <input type="range" id="size" min="200" max="1200" value="600" />
+        <div class="value"><span id="sizeVal">600</span> px</div>
+
+        <label>Background color:</label>
+        <input type="color" id="bgColor" value="#ffffff" />
+
+        <div class="accordion-wrapper">
+          <div class="accordion-header">
+            <span>Dots Options</span>
+          </div>
+          <div class="accordion-content">
+            <div class="row">
+              <div>
+                <label>Dots Style:</label>
+                <select id="dotStyle">
+                  <option value="square">Square</option>
+                  <option value="dots">Dots</option>
+                  <option value="rounded">Rounded</option>
+                  <option value="extra-rounded">Extra rounded</option>
+                  <option value="classy-rounded">Classy rounded</option>
+                  <option value="classy">Classy</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Color Type:</label>
+                <select id="dotColorType">
+                  <option value="solid">Single color</option>
+                  <option value="gradient">Color gradient</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="solidColorBox">
+              <label>Dots Color:</label>
+              <input type="color" id="dotColor" value="#000000" />
+            </div>
+
+            <div id="gradientBox" class="row" style="display: none">
+              <div>
+                <label>Gradient Type:</label>
+                <select id="gradientTypeDot">
+                  <option value="linear">Linear</option>
+                  <option value="radial">Radial</option>
+                </select>
+              </div>
+              <div style="display: flex; gap: 10px">
+                <input type="color" id="gradColor1Dot" value="#000000" />
+                <input type="color" id="gradColor2Dot" value="#ff0000" />
+              </div>
+              <div>
+                <label>Rotation</label>
+                <input
+                  type="range"
+                  id="rotateDot"
+                  min="1"
+                  max="360"
+                  value="1"
+                />
+                <div class="value"><span id="rotateDotVal">1</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-wrapper">
+          <div class="accordion-header">
+            <span>Corners Square Options</span>
+          </div>
+
+          <div class="accordion-content">
+            <div class="row">
+              <div>
+                <label>Corners Square Style:</label>
+                <select id="cornerStyle">
+                  <option value="">None</option>
+                  <option value="square">Square</option>
+                  <option value="dot">Dot</option>
+                  <option value="extra-rounded">Extra rounded</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Color Type:</label>
+                <select id="cornerColorType">
+                  <option value="solid">Single color</option>
+                  <option value="gradient">Color gradient</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="cornerColorBox">
+              <label>Corners Square Color:</label>
+              <input type="color" id="squareCornerColor" value="#000000" />
+            </div>
+
+            <div id="cornerGradientBox" class="row" style="display: none">
+              <div>
+                <label>Gradient Type:</label>
+                <select id="gradientTypeCorner">
+                  <option value="linear">Linear</option>
+                  <option value="radial">Radial</option>
+                </select>
+              </div>
+
+              <div style="display: flex; gap: 10px">
+                <input type="color" id="gradColor1Corner" value="#000000" />
+                <input type="color" id="gradColor2Corner" value="#ff0000" />
+              </div>
+              <div>
+                <label>Rotation</label>
+                <input
+                  type="range"
+                  id="rotateCorner"
+                  min="1"
+                  max="360"
+                  value="1"
+                />
+                <div class="value"><span id="rotateCornerVal">1</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-wrapper">
+          <div class="accordion-header">
+            <span>Corners Dot Options</span>
+          </div>
+
+          <div class="accordion-content">
+            <div class="row">
+              <div>
+                <label>Corners Dot Style:</label>
+
+                <select id="cornersDotStyle">
+                  <option value="">None</option>
+                  <option value="square">Square</option>
+                  <option value="dot">Dot</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Color Type:</label>
+                <select id="cornerDotColorType">
+                  <option value="solid">Single color</option>
+                  <option value="gradient">Color gradient</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="cornerDotColorBox">
+              <label>Corners Dot Color:</label>
+              <input type="color" id="cornerDotColor" value="#000000" />
+            </div>
+
+            <div id="cornerDotGradientBox" class="row" style="display: none">
+              <div>
+                <label>Gradient Type:</label>
+                <select id="gradientTypeCornerDot">
+                  <option value="linear">Linear</option>
+                  <option value="radial">Radial</option>
+                </select>
+              </div>
+
+              <div style="display: flex; gap: 10px">
+                <input type="color" id="gradColor1CornerDot" value="#000000" />
+                <input type="color" id="gradColor2CornerDot" value="#ff0000" />
+              </div>
+              <div>
+                <label>Rotation</label>
+                <input
+                  type="range"
+                  id="rotateCornerDot"
+                  min="1"
+                  max="360"
+                  value="1"
+                />
+                <div class="value"><span id="rotateCornerDotVal">1</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <label>Logo:</label>
+        <input type="file" id="logo" />
+        <label>Logo size (%):</label>
+        <input
+          type="range"
+          id="logoScale"
+          min="20"
+          max="80"
+          value="40"
+          step="20"
+        />
+        <div class="value"><span id="logoVal">20</span>%</div>
+        <button onclick="downloadQR()">Download PNG</button>
+      </div>
+      <div class="panel qr-panel">
+        <div class="preview">
+          <h2>Preview</h2>
+          <div id="qrBox"></div>
+        </div>
+<div class="qr-text">
+  <p class="title">Open Source Solution</p>
+  <p class="subtitle">
+    Created with the 
+    <a href="https://qr-code-styling.com/" target="_blank" rel="noopener noreferrer">QR Code Styling library</a>
+  </p>
+  <p class="github">
+    <a href="https://github.com/volodymyr975/" target="_blank" rel="noopener noreferrer">
+      View on my GitHub | volodymyr975
+    </a>
+  </p>
+</div>
+
+
+</div>
+
+        
+      </div>
+    </div>
+
+    <script>
+      document.querySelectorAll(".accordion-wrapper").forEach((wrapper) => {
+        const header = wrapper.querySelector(".accordion-header");
+        const content = wrapper.querySelector(".accordion-content");
+
+        header.addEventListener("click", () => {
+          content.classList.toggle("show");
+        });
+      });
+      const dotColorType = document.getElementById("dotColorType");
+      const cornerColorType = document.getElementById("cornerColorType");
+      const cornerDotColorType = document.getElementById("cornerDotColorType");
+
+      const solidColorBox = document.getElementById("solidColorBox");
+      const cornerColorBox = document.getElementById("cornerColorBox");
+      const cornerDotColorBox = document.getElementById("cornerDotColorBox");
+
+      const gradientBox = document.getElementById("gradientBox");
+      const cornerGradientBox = document.getElementById("cornerGradientBox");
+      const cornerDotGradientBox = document.getElementById(
+        "cornerDotGradientBox",
+      );
+
+      dotColorType.addEventListener("change", () => {
+        if (dotColorType.value === "gradient") {
+          solidColorBox.style.display = "none";
+          gradientBox.style.display = "flex";
+        } else {
+          solidColorBox.style.display = "block";
+          gradientBox.style.display = "none";
+        }
+        updateQR();
+      });
+      cornerColorType.addEventListener("change", () => {
+        if (cornerColorType.value === "gradient") {
+          cornerColorBox.style.display = "none";
+          cornerGradientBox.style.display = "flex";
+        } else {
+          cornerColorBox.style.display = "block";
+          cornerGradientBox.style.display = "none";
+        }
+        updateQR();
+      });
+      cornerDotColorType.addEventListener("change", () => {
+        if (cornerDotColorType.value === "gradient") {
+          cornerDotColorBox.style.display = "none";
+          cornerDotGradientBox.style.display = "flex";
+        } else {
+          cornerDotColorBox.style.display = "block";
+          cornerDotGradientBox.style.display = "none";
+        }
+        updateQR();
+      });
+
+      // --- Змінні ---
+      const qrBox = document.getElementById("qrBox");
+      const qrRadius = document.getElementById("qrRadius");
+      const radiusVal = document.getElementById("radiusVal");
+
+      let qrPreview = new QRCodeStyling({
+        width: qrBox.clientWidth,
+        height: qrBox.clientWidth,
+        typeNumber: 10,
+        errorCorrectionLevel: "Q",
+        data: "https://google.com",
+        dotsOptions: { color: "#000", type: "square", scale: 1 },
+        cornersSquareOptions: { type: "square" },
+        backgroundOptions: { color: "#fff" },
+        imageOptions: { crossOrigin: "anonymous", margin: 0, padding: 0 },
+        margin: 0,
+        padding: 0,
+      });
+
+      qrPreview.append(qrBox);
+
+      // --- Тип QR ---
+      function updateType() {
+        const t = type.value;
+        const box = document.getElementById("inputs");
+        if (t === "wifi") {
+          box.innerHTML = `
+          <label>SSID:</label><input id="ssid">
+          <label>Password:</label><input id="pass">
+          <label>Type:</label>
+          <select id="enc"><option>WPA</option><option>WEP</option><option>nopass</option></select>`;
+        } else if (t === "phone") {
+          box.innerHTML = `<label>Phone:</label><input id="phone">`;
+        } else if (t === "text") {
+          box.innerHTML = `<label>Text:</label><input id="text">`;
+        } else {
+          box.innerHTML = `<label>Link:</label><input id="data" value="https://google.com">`;
+        }
+
+        box.querySelectorAll("input,select").forEach((el) => {
+          el.addEventListener("input", generateQR);
+          el.addEventListener("change", generateQR);
+        });
+
+        generateQR();
+      }
+
+      function buildData() {
+        const t = type.value;
+        let textValue = "";
+
+        if (t === "wifi") {
+          const ssidInput = document.getElementById("ssid");
+          const passInput = document.getElementById("pass");
+          const encInput = document.getElementById("enc");
+          const ssid = ssidInput ? ssidInput.value : "";
+          const pass = passInput ? passInput.value : "";
+          const enc = encInput ? encInput.value : "WPA"; // дефолт
+          textValue = `WIFI:T:${enc};S:${ssid};P:${pass};;`;
+        } else if (t === "phone") {
+          const phoneInput = document.getElementById("phone");
+          textValue = phoneInput ? phoneInput.value : "";
+        } else if (t === "text") {
+          const textInput = document.getElementById("text");
+          textValue = textInput ? textInput.value : "";
+        } else {
+          const dataInput = document.getElementById("data");
+          textValue = dataInput ? dataInput.value : "";
+        }
+
+        return textValue; // UTF-8 обробляється автоматично
+      }
+
+      function encodeUTF8(str) {
+        const encoder = new TextEncoder(); // UTF-8
+        const bytes = encoder.encode(str);
+        let binary = "";
+        for (let i = 0; i < bytes.length; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return binary;
+      }
+
+      function buildQRStylingOptions() {
+        // --- Dots ---
+        let dotsOptions = { type: dotStyle.value };
+        if (dotColorType.value === "solid") {
+          dotsOptions.color = dotColor.value;
+          dotsOptions.gradient = null;
+        } else {
+          dotsOptions.color = null;
+          dotsOptions.gradient = {
+            type: gradientTypeDot.value,
+            rotation:
+              gradientTypeDot.value === "linear"
+                ? (parseInt(rotateDot.value) * Math.PI) / 180
+                : undefined,
+            colorStops: [
+              { offset: 0, color: gradColor1Dot.value },
+              { offset: 1, color: gradColor2Dot.value },
+            ],
+          };
+        }
+
+        // --- Corner Squares ---
+        let cornerSquareOptions = { type: cornerStyle.value };
+        if (cornerColorType.value === "solid") {
+          cornerSquareOptions.color = squareCornerColor.value;
+          cornerSquareOptions.gradient = null;
+        } else {
+          cornerSquareOptions.color = null;
+          cornerSquareOptions.gradient = {
+            type: gradientTypeCorner.value,
+            rotation:
+              gradientTypeCorner.value === "linear"
+                ? (parseInt(rotateCorner.value) * Math.PI) / 180
+                : undefined,
+            colorStops: [
+              { offset: 0, color: gradColor1Corner.value },
+              { offset: 1, color: gradColor2Corner.value },
+            ],
+          };
+        }
+
+        // --- Corner Dots ---
+        let cornersDotOptions = { type: cornersDotStyle.value };
+        if (cornerDotColorType.value === "solid") {
+          cornersDotOptions.color = cornerDotColor.value;
+          cornersDotOptions.gradient = null;
+        } else {
+          cornersDotOptions.color = null;
+          cornersDotOptions.gradient = {
+            type: gradientTypeCornerDot.value,
+            rotation:
+              gradientTypeCornerDot.value === "linear"
+                ? (parseInt(rotateCornerDot.value) * Math.PI) / 180
+                : undefined,
+            colorStops: [
+              { offset: 0, color: gradColor1CornerDot.value },
+              { offset: 1, color: gradColor2CornerDot.value },
+            ],
+          };
+        }
+
+        return { dotsOptions, cornerSquareOptions, cornersDotOptions };
+      }
+
+      // --- Генерація QR ---
+      function generateQR() {
+        logoVal.textContent = logoScale.value;
+        marginVal.textContent = margin.value;
+        rotateDotVal.textContent = rotateDot.value;
+        rotateCornerVal.textContent = rotateCorner.value;
+        rotateCornerDotVal.textContent = rotateCornerDot.value;
+
+        let canvasSize = qrBox.clientWidth;
+
+        const marginPx = (parseFloat(margin.value) / 100) * canvasSize;
+        const imageSize = parseFloat(logoScale.value) / 100;
+        const { dotsOptions, cornerSquareOptions, cornersDotOptions } =
+          buildQRStylingOptions();
+
+        const updateQR = (logoData = null) => {
+          qrPreview.update({
+            width: canvasSize,
+            height: canvasSize,
+
+            data: encodeUTF8(buildData()),
+            dotsOptions: dotsOptions,
+            cornersSquareOptions: cornerSquareOptions,
+            cornersDotOptions: cornersDotOptions,
+            backgroundOptions: { color: bgColor.value },
+            image: logoData,
+            imageOptions: {
+              crossOrigin: "anonymous",
+
+              imageSize,
+            },
+            margin: marginPx,
+            qrOptions: {
+              typeNumber: "0",
+            },
+          });
+        };
+
+        if (logo.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (e) => updateQR(e.target.result);
+          reader.readAsDataURL(logo.files[0]);
+        } else {
+          updateQR();
+        }
+      }
+
+      // --- Завантаження QR з border-radius ---
+      function downloadQR() {
+        const exportSize = parseInt(size.value);
+        const imageSize = parseFloat(logoScale.value) / 100;
+        const marginPx = (exportSize * parseInt(margin.value)) / 100;
+        const radiusPx = (exportSize * parseInt(qrRadius.value)) / 100;
+
+        const { dotsOptions, cornerSquareOptions, cornersDotOptions } =
+          buildQRStylingOptions();
+
+        const qrExport = new QRCodeStyling({
+          width: exportSize,
+          height: exportSize,
+          data: buildData(),
+          dotsOptions: dotsOptions,
+          cornersSquareOptions: cornerSquareOptions,
+          cornersDotOptions: cornersDotOptions,
+          backgroundOptions: { color: bgColor.value },
+          imageOptions: { crossOrigin: "anonymous", imageSize },
+          margin: marginPx,
+          qrOptions: { typeNumber: 0, errorCorrectionLevel: "Q", mode: "Byte" },
+        });
+
+        const drawRoundedQR = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = canvas.height = exportSize;
+          const ctx = canvas.getContext("2d");
+
+          ctx.fillStyle = bgColor.value;
+          ctx.beginPath();
+          ctx.moveTo(radiusPx, 0);
+          ctx.lineTo(exportSize - radiusPx, 0);
+          ctx.quadraticCurveTo(exportSize, 0, exportSize, radiusPx);
+          ctx.lineTo(exportSize, exportSize - radiusPx);
+          ctx.quadraticCurveTo(
+            exportSize,
+            exportSize,
+            exportSize - radiusPx,
+            exportSize,
+          );
+          ctx.lineTo(radiusPx, exportSize);
+          ctx.quadraticCurveTo(0, exportSize, 0, exportSize - radiusPx);
+          ctx.lineTo(0, radiusPx);
+          ctx.quadraticCurveTo(0, 0, radiusPx, 0);
+          ctx.closePath();
+          ctx.fill();
+          ctx.clip();
+
+          const img = new Image();
+          img.onload = () => {
+            ctx.drawImage(img, 0, 0, exportSize, exportSize);
+            const link = document.createElement("a");
+            link.download = "qr-code.png";
+            link.href = canvas.toDataURL();
+            link.click();
+          };
+          img.src = qrExport._canvas.toDataURL();
+        };
+
+        if (logo.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            qrExport.update({ image: e.target.result });
+            setTimeout(drawRoundedQR, 100);
+          };
+          reader.readAsDataURL(logo.files[0]);
+        } else {
+          setTimeout(drawRoundedQR, 100);
+        }
+      }
+
+      // --- Події ---
+      [
+        "type",
+        "margin",
+        "bgColor",
+        "logo",
+        "logoScale",
+
+        "dotColor",
+        "gradientTypeDot",
+        "gradColor1Dot",
+        "gradColor2Dot",
+
+        "cornerDotColor",
+        "gradientTypeCornerDot",
+        "gradColor1CornerDot",
+        "gradColor2CornerDot",
+
+        "squareCornerColor",
+        "gradientTypeCorner",
+        "gradColor1Corner",
+        "gradColor2Corner",
+      ].forEach((id) => {
+        document.getElementById(id).addEventListener("input", generateQR);
+        document.getElementById(id).addEventListener("change", generateQR);
+      });
+      // --- Події ---
+      [
+        "rotateDot",
+        "dotStyle",
+        "dotColorType",
+
+        "rotateCorner",
+        "cornerStyle",
+        "cornerColorType",
+
+        "rotateCornerDot",
+        "cornersDotStyle",
+        "cornerDotColorType",
+      ].forEach((id) => {
+        document.getElementById(id).addEventListener("change", generateQR);
+      });
+
+      type.addEventListener("change", updateType);
+
+      qrRadius.addEventListener("input", () => {
+        radiusVal.textContent = qrRadius.value;
+        qrBox.style.borderRadius =
+          (parseInt(qrRadius.value) / 100) * qrBox.clientWidth + "px";
+      });
+
+      size.addEventListener("input", () => {
+        sizeVal.textContent = size.value;
+      });
+
+      window.addEventListener("resize", () => {
+        qrPreview.update({
+          width: qrBox.clientWidth,
+          height: qrBox.clientWidth,
+        });
+        generateQR();
+      });
+
+      // --- Ініціалізація ---
+      updateType();
+    </script>
+  </body>
+</html>
 
